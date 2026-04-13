@@ -11,13 +11,11 @@ function App() {
       <Hero />
       <div className="container">
         <Services />
-      </div>
-      <div className="container">
+        </div>
+        <div className="container">
         <Booking />
-      </div>
-      <div className="container">
+        </div>
         <Contact />
-      </div>
     </div>
   );
 }
