@@ -1,9 +1,15 @@
-import Home from "./pages/Home";
+import Navbar from "./components/Navbar";
+import Hero from "./components/Hero";
+import Services from "./components/Services";
+import Contact from "./components/Contact";
 
 function App() {
   return (
     <div>
-      <Home />
+      <Navbar />
+      <Hero />
+      <Services />
+      <Contact />
     </div>
   );
 }
