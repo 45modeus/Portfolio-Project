@@ -1,0 +1,166 @@
+/* Layout */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  background: #f1f5f9;
+  font-family: Arial, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: linear-gradient(180deg, #0f172a, #1e293b);
+  color: white;
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.sidebar h2 {
+  font-size: 22px;
+  margin-bottom: 20px;
+}
+
+.sidebar p {
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #cbd5e1;
+}
+
+.sidebar p:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+/* Main content */
+.admin-content {
+  flex: 1;
+  padding: 30px;
+}
+
+/* Page title */
+.admin-content h2 {
+  margin-bottom: 20px;
+  color: #0f172a;
+}
+
+/* Search bar */
+input {
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  margin: 20px 0;
+  outline: none;
+  transition: 0.2s;
+  font-size: 14px;
+}
+
+input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 5px rgba(59,130,246,0.3);
+}
+
+/* Section titles */
+.admin-content h3 {
+  margin-top: 25px;
+  margin-bottom: 10px;
+  color: #334155;
+}
+
+/* Cards */
+.admin-card {
+  background: white;
+  padding: 15px 18px;
+  margin-bottom: 12px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: 0.2s;
+}
+
+.admin-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.08);
+}
+
+/* Delete button */
+.admin-card button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.admin-card button:hover {
+  background: #dc2626;
+}
+
+/* Stats box */
+.stats {
+  margin-top: 20px;
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+
+  display: flex;
+  gap: 20px;
+  font-weight: bold;
+}
+
+/* Logout button */
+.logout-btn {
+  margin-top: auto;
+  padding: 10px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  min-width: 300px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.cancel-btn {
+  background: gray;
+  color: white;
+}
+
+.delete-btn {
+  background: red;
+  color: white;
+}

@@ -1,22 +1,33 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import Services from "./components/Services";
-import Booking from "./components/Booking";
-import Contact from "./components/Contact";
+import Footer from "./components/Footer";
+
+import Home from "./pages/Home";
+import Admin from "./components/Admin";
+import AdminLogin from "./components/AdminLogin";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
-    <div>
+    <Router>
       <Navbar />
-      <Hero />
-      <div className="container">
-        <Services />
-        </div>
-        <div className="container">
-        <Booking />
-        </div>
-        <Contact />
-    </div>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/admin-login" element={<AdminLogin />} />
+
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <Admin />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+
+      <Footer />
+    </Router>
   );
 }
 

@@ -1,3 +1,25 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+img {
+  max-width: 100%;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+button {
+  transition: all 0.25s ease;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
 body {
   background: #f6f7fb;
   font-family: "Poppins", sans-serif;
@@ -14,6 +36,7 @@ a {
 
 section {
   padding: 90px 20px;
+  border-bottom: 1px solid #eee;
 }
 
 h2 {
