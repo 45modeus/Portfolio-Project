@@ -43,10 +43,20 @@
 
 @media (max-width: 768px) {
   .hero h1 {
-    font-size: 28px;
+    font-size: 32px;
   }
 
   .hero p {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    height: 80vh;
+  }
+
+  .hero h1 {
+    font-size: 26px;
   }
 }

@@ -23,6 +23,7 @@
 }
 
 .sidebar p {
+  margin: 0;
   padding: 10px;
   border-radius: 8px;
   cursor: pointer;
@@ -163,4 +164,63 @@ input:focus {
 .delete-btn {
   background: red;
   color: white;
+}
+
+/* HAMBURGER (FIXED VISIBILITY) */
+.admin-hamburger {
+  display: none;
+  font-size: 26px;
+  padding: 10px 15px;
+  cursor: pointer;
+  background: #0f172a;
+  color: white;
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1001;
+  border-radius: 8px;
+}
+
+/* MOBILE ONLY */
+@media (max-width: 768px) {
+
+  .admin-hamburger {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100%;
+    width: 250px;
+    z-index: 1000;
+    transition: 0.3s ease;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .admin-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 999;
+  }
+
+  .admin-content {
+    padding: 15px;
+  }
+
+  .admin-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .stats {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

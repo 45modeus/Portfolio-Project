@@ -59,6 +59,7 @@
 @media (max-width: 768px) {
   .booking form {
     padding: 20px;
+    width: 100%;
   }
 
   .booking h2 {

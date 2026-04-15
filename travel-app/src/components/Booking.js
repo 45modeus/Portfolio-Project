@@ -8,21 +8,42 @@ function Booking() {
     service: ""
   });
 
+  const [showModal, setShowModal] = useState(false);
+  const [responseMsg, setResponseMsg] = useState("");
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ✅ get today's date (for min date)
+  const today = new Date().toISOString().split("T")[0];
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch("http://localhost:5000/book", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form)
-    });
+    try {
+      const res = await fetch("http://localhost:5000/book", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form)
+      });
 
-    const data = await res.json();
-    alert(data.message);
+      const data = await res.json();
+
+      setResponseMsg(data.message);
+      setShowModal(true);
+
+      // reset form
+      setForm({
+        name: "",
+        date: "",
+        service: ""
+      });
+
+    } catch (err) {
+      setResponseMsg("Something went wrong");
+      setShowModal(true);
+    }
   };
 
   return (
@@ -30,12 +51,27 @@ function Booking() {
       <h2>Book Your Experience</h2>
 
       <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Your Name" onChange={handleChange} />
+        <input
+          name="name"
+          placeholder="Your Name"
+          value={form.name}
+          onChange={handleChange}
+        />
 
-        <input type="date" name="date" onChange={handleChange} />
+        <input
+          type="date"
+          name="date"
+          value={form.date}
+          min={today}
+          onChange={handleChange}
+        />
 
-        <select name="service" onChange={handleChange}>
-          <option>Select Service</option>
+        <select
+          name="service"
+          value={form.service}
+          onChange={handleChange}
+        >
+          <option value="">Select Service</option>
           <option>Island Tour</option>
           <option>Hotel Booking</option>
           <option>Airport Transfer</option>
@@ -44,6 +80,20 @@ function Booking() {
 
         <button type="submit">Book Now</button>
       </form>
+
+      {/* MODAL */}
+      {showModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <h3>Booking Status</h3>
+            <p>{responseMsg}</p>
+
+            <button onClick={() => setShowModal(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

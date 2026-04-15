@@ -1,56 +1,187 @@
+/* RESET */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-img {
-  max-width: 100%;
-}
-
-body {
-  overflow-x: hidden;
-}
-
-button {
-  transition: all 0.25s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: #f6f7fb;
   font-family: "Poppins", sans-serif;
   color: #222;
+  overflow-x: hidden;
 }
 
-html {
-  scroll-behavior: smooth;
+/* IMAGES */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
 }
 
+/* LINKS */
 a {
   text-decoration: none;
+  color: inherit;
 }
 
-section {
-  padding: 90px 20px;
-  border-bottom: 1px solid #eee;
+/* BUTTONS */
+button {
+  transition: all 0.25s ease;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (hover: hover) {
+  button:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* TYPOGRAPHY (RESPONSIVE) */
+h1 {
+  font-size: clamp(28px, 5vw, 48px);
+  line-height: 1.2;
 }
 
 h2 {
-  font-size: 34px;
+  font-size: clamp(22px, 4vw, 34px);
   font-weight: 700;
   margin-bottom: 20px;
 }
 
 p {
+  font-size: clamp(14px, 2.5vw, 16px);
   color: #666;
+  line-height: 1.6;
 }
 
+/* SECTIONS */
+section {
+  padding: clamp(50px, 8vw, 90px) 20px;
+  border-bottom: 1px solid #eee;
+}
+
+/* CONTAINER */
 .container {
+  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 16px;
+}
+
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 200;
+}
+
+.modal {
+  background: #fff;
+  padding: 25px;
+  border-radius: 12px;
+  text-align: center;
+  width: min(350px, 92vw);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal button {
+  margin-top: 15px;
+  padding: 10px 20px;
+  background: #0a66c2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+}
+
+.modal button:hover {
+  background: #084c9e;
+}
+
+/* RESPONSIVE BREAKPOINTS */
+
+/* TABLET */
+@media (max-width: 768px) {
+  section {
+    padding: 60px 16px;
+  }
+
+  h2 {
+    font-size: 26px;
+  }
+}
+
+/* PHONE */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+
+  section {
+    padding: 50px 14px;
+  }
+
+  h2 {
+    font-size: 22px;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+/* =========================
+   MOBILE SAFETY PATCH
+========================= */
+
+/* Prevent weird layout shifts */
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Better font consistency everywhere */
+button, input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+/* Better touch experience */
+button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+/* Fix flex/grid overflow issues globally */
+* {
+  min-width: 0;
+}
+
+/* Prevent long text breaking layouts (admin cards etc.) */
+p, h1, h2, h3, span, div {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* Better form behavior on mobile zoom (iOS fix) */
+input, textarea, select {
+  font-size: 16px;
+}
+
+/* Remove hover effects on touch devices */
+@media (hover: none) {
+  button:hover {
+    transform: none !important;
+  }
 }

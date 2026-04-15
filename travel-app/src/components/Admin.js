@@ -5,7 +5,7 @@ import "../styles/Admin.css";
 function Admin() {
     const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
-
+    const [menuOpen, setMenuOpen] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
     const [type, setType] = useState("");
@@ -26,21 +26,20 @@ function Admin() {
             return;
         }
 
-        // ✅ delay removal so it doesn't break navigation
         setTimeout(() => {
             sessionStorage.removeItem("isLoggedIn");
         }, 100);
 
     }, [navigate]);
 
-    // ✅ Redirect if no token
+    // Redirect if no token
     useEffect(() => {
         if (!token) {
             navigate("/admin-login");
         }
     }, [token, navigate]);
 
-    // ✅ Fetch data securely
+    // Fetch data securely
     useEffect(() => {
         if (!token) return;
 
@@ -82,7 +81,7 @@ function Admin() {
 
     }, [token, navigate]);
 
-    // ✅ DELETE logic
+    // DELETE logic
     const confirmDelete = async () => {
         if (!token) return;
 
@@ -133,13 +132,13 @@ function Admin() {
         setShowModal(false);
     };
 
-    // ✅ Logout
+    // Logout
     const logout = () => {
         sessionStorage.removeItem("token");
         navigate("/admin-login");
     };
 
-    // ✅ Search
+    // Search
     const handleSearch = (value) => {
         setSearch(value);
 
@@ -161,16 +160,37 @@ function Admin() {
     return (
         <div className="admin-layout">
 
-            <aside className="sidebar">
+            {/* HAMBURGER (MUST BE INSIDE LAYOUT) */}
+            <div
+                className="admin-hamburger"
+                onClick={() => setMenuOpen(!menuOpen)}
+            >
+                ☰
+            </div>
+
+            <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
+
                 <h2>Admin</h2>
-                <p>Dashboard</p>
-                <p>Bookings</p>
-                <p>Messages</p>
+
+                <nav className="admin-nav">
+                    <ul>
+                        <li onClick={() => setMenuOpen(false)}>Dashboard</li>
+                        <li onClick={() => setMenuOpen(false)}>Bookings</li>
+                        <li onClick={() => setMenuOpen(false)}>Messages</li>
+                    </ul>
+                </nav>
 
                 <button className="logout-btn" onClick={logout}>
                     Logout
                 </button>
             </aside>
+
+            {menuOpen && (
+                <div
+                    className="admin-overlay"
+                    onClick={() => setMenuOpen(false)}
+                />
+            )}
 
             <main className="admin-content">
 

@@ -8,6 +8,9 @@ function Contact() {
         message: ""
     });
 
+    const [showModal, setShowModal] = useState(false);
+    const [responseMsg, setResponseMsg] = useState("");
+
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
@@ -26,7 +29,8 @@ function Contact() {
 
             const data = await response.json();
 
-            alert("Server says: " + data.message);
+            setResponseMsg(data.message);
+            setShowModal(true);
 
             // reset form
             setForm({
@@ -36,21 +40,53 @@ function Contact() {
             });
 
         } catch (error) {
-            console.error(error);
-            alert("Something went wrong");
+            setResponseMsg("Something went wrong");
+            setShowModal(true);
         }
     };
 
     return (
         <div className="contact">
-            <h2>Contact Us / Contactez-nous / Kontak nou</h2>
+            <h2>Contact Us</h2>
 
             <form onSubmit={handleSubmit}>
-                <input name="name" placeholder="Name / Nom / Non" onChange={handleChange} />
-                <input name="email" placeholder="Email" onChange={handleChange} />
-                <textarea name="message" placeholder="Message" onChange={handleChange}></textarea>
+                <input
+                    name="name"
+                    placeholder="Name"
+                    value={form.name}
+                    onChange={handleChange}
+                />
+
+                <input
+                    name="email"
+                    placeholder="Email"
+                    value={form.email}
+                    onChange={handleChange}
+                />
+
+                <textarea
+                    name="message"
+                    placeholder="Message"
+                    value={form.message}
+                    onChange={handleChange}
+                ></textarea>
+
                 <button type="submit">Send</button>
             </form>
+
+            {/* MODAL */}
+            {showModal && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h3>Message Status</h3>
+                        <p>{responseMsg}</p>
+
+                        <button onClick={() => setShowModal(false)}>
+                            Close
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

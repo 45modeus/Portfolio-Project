@@ -54,9 +54,9 @@ app.post("/contact", async (req, res) => {
     const newMessage = new Message(req.body);
     await newMessage.save();
 
-    res.json({ message: "Message saved in DB" });
+    res.json({ message: "Message sent successfully" });
   } catch (err) {
-    res.status(500).json({ message: "Error Saving Message" });
+    res.status(500).json({ message: "Error sending message" });
   }
 });
 
@@ -90,7 +90,7 @@ app.post("/book", async (req, res) => {
 
     console.log("Booking saved:", newBooking);
 
-    res.json({ message: "Booking saved in database!" });
+    res.json({ message: "Booking made successfully" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Error saving booking" });
