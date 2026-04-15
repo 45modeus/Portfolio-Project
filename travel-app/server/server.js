@@ -49,7 +49,7 @@ function verifyToken(req, res, next) {
 // POST REQUESTS
 
 // Route
-app.post("/contact", verifyToken, async (req, res) => {
+app.post("/contact", async (req, res) => {
   try {
     const newMessage = new Message(req.body);
     await newMessage.save();
@@ -83,7 +83,7 @@ app.post("/login", async (req, res) => {
   res.json({ token });
 });
 // Booking
-app.post("/book", verifyToken, async (req, res) => {
+app.post("/book", async (req, res) => {
   try {
     const newBooking = new Booking(req.body);
     await newBooking.save();

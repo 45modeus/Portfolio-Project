@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Admin.css";
 
 function Admin() {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
+    const navigate = useNavigate();
 
     const [showModal, setShowModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
@@ -16,34 +18,85 @@ function Admin() {
 
     const [search, setSearch] = useState("");
 
-    // Fetch data
     useEffect(() => {
+        const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+
+        if (!isLoggedIn) {
+            navigate("/admin-login");
+            return;
+        }
+
+        // ✅ delay removal so it doesn't break navigation
+        setTimeout(() => {
+            sessionStorage.removeItem("isLoggedIn");
+        }, 100);
+
+    }, [navigate]);
+
+    // ✅ Redirect if no token
+    useEffect(() => {
+        if (!token) {
+            navigate("/admin-login");
+        }
+    }, [token, navigate]);
+
+    // ✅ Fetch data securely
+    useEffect(() => {
+        if (!token) return;
+
+        // BOOKINGS
         fetch("http://localhost:5000/bookings", {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401 || res.status === 403) {
+                    sessionStorage.removeItem("token");
+                    navigate("/admin-login");
+                    return;
+                }
+                return res.json();
+            })
             .then(data => {
+                if (!data) return;
                 setBookings(data);
                 setAllBookings(data);
             });
 
+        // MESSAGES
         fetch("http://localhost:5000/messages", {
             headers: { Authorization: `Bearer ${token}` }
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401 || res.status === 403) {
+                    sessionStorage.removeItem("token");
+                    navigate("/admin-login");
+                    return;
+                }
+                return res.json();
+            })
             .then(data => {
+                if (!data) return;
                 setMessages(data);
                 setAllMessages(data);
             });
-    }, [token]);
 
-    // DELETE logic
+    }, [token, navigate]);
+
+    // ✅ DELETE logic
     const confirmDelete = async () => {
+        if (!token) return;
+
         if (type === "booking") {
-            await fetch(`http://localhost:5000/bookings/${selectedId}`, {
+            const res = await fetch(`http://localhost:5000/bookings/${selectedId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });
+
+            if (res.status === 401 || res.status === 403) {
+                sessionStorage.removeItem("token");
+                navigate("/admin-login");
+                return;
+            }
 
             const updated = allBookings.filter(b => b._id !== selectedId);
             setAllBookings(updated);
@@ -56,10 +109,16 @@ function Admin() {
         }
 
         if (type === "message") {
-            await fetch(`http://localhost:5000/messages/${selectedId}`, {
+            const res = await fetch(`http://localhost:5000/messages/${selectedId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });
+
+            if (res.status === 401 || res.status === 403) {
+                sessionStorage.removeItem("token");
+                navigate("/admin-login");
+                return;
+            }
 
             const updated = allMessages.filter(m => m._id !== selectedId);
             setAllMessages(updated);
@@ -74,13 +133,13 @@ function Admin() {
         setShowModal(false);
     };
 
-    // Logout
+    // ✅ Logout
     const logout = () => {
-        localStorage.removeItem("token");
-        window.location.href = "/admin-login";
+        sessionStorage.removeItem("token");
+        navigate("/admin-login");
     };
 
-    // SEARCH (GLOBAL FIX)
+    // ✅ Search
     const handleSearch = (value) => {
         setSearch(value);
 
@@ -161,6 +220,7 @@ function Admin() {
                 <div>Total Bookings: {bookings.length}</div>
                 <div>Total Messages: {messages.length}</div>
             </div>
+
             {showModal && (
                 <div className="modal-overlay">
                     <div className="modal">

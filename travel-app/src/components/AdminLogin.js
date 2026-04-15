@@ -11,8 +11,7 @@ function AdminLogin({ onLogin }) {
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
-        e.preventDefault(); // ✅ prevents page refresh
-        setLoading(true);
+        e.preventDefault(); //
         setError("");
 
         try {
@@ -25,7 +24,8 @@ function AdminLogin({ onLogin }) {
             const data = await res.json();
 
             if (data.token) {
-                localStorage.setItem("token", data.token);
+                sessionStorage.setItem("token", data.token);
+                sessionStorage.setItem("isLoggedIn", "true"); // Set flag for forced re-login
 
                 onLogin?.();
 
