@@ -12,8 +12,8 @@ const bcrypt = require("bcryptjs");
 const Message = require("../models/Messages");
 
 const ADMIN = {
-  username: "admin",
-  password: bcrypt.hashSync("123456", 10)
+  username: process.env.ADMIN_USERNAME || "admin",
+  password: process.env.ADMIN_PASSWORD 
 };
 
 app.use(cors({
@@ -39,7 +39,7 @@ function verifyToken(req, res, next) {
   const token = authHeader.split(" ")[1]; // remove "Bearer"
 
   try {
-    jwt.verify(token, "SECRET_KEY_123");
+    jwt.verify(token, process.env.JWT_SECRET);
     next();
   } catch (err) {
     return res.status(401).json({ message: "Invalid token" });
@@ -68,7 +68,7 @@ app.post("/login", async (req, res) => {
     return res.status(401).json({ message: "Invalid username" });
   }
 
-  const isMatch = await bcrypt.compare(password, ADMIN.password);
+  const isMatch = password === ADMIN.password;
 
   if (!isMatch) {
     return res.status(401).json({ message: "Invalid password" });
@@ -76,12 +76,13 @@ app.post("/login", async (req, res) => {
 
   const token = jwt.sign(
     { username },
-    "SECRET_KEY_123",
+    process.env.JWT_SECRET,
     { expiresIn: "2h" }
   );
 
   res.json({ token });
 });
+
 // Booking
 app.post("/book", async (req, res) => {
   try {
