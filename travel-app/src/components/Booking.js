@@ -22,7 +22,7 @@ function Booking() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/book", {
+      const res = await fetch("https://island-escape.onrender.com/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form)

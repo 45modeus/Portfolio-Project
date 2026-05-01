@@ -44,7 +44,7 @@ function Admin() {
         if (!token) return;
 
         // BOOKINGS
-        fetch("http://localhost:5000/bookings", {
+        fetch("https://island-escape.onrender.com/bookings", {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -62,7 +62,7 @@ function Admin() {
             });
 
         // MESSAGES
-        fetch("http://localhost:5000/messages", {
+        fetch("https://island-escape.onrender.com/messages", {
             headers: { Authorization: `Bearer ${token}` }
         })
             .then(res => {
@@ -86,7 +86,7 @@ function Admin() {
         if (!token) return;
 
         if (type === "booking") {
-            const res = await fetch(`http://localhost:5000/bookings/${selectedId}`, {
+            const res = await fetch(`https://island-escape.onrender.com/bookings/${selectedId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -108,7 +108,7 @@ function Admin() {
         }
 
         if (type === "message") {
-            const res = await fetch(`http://localhost:5000/messages/${selectedId}`, {
+            const res = await fetch(`https://island-escape.onrender.com/messages/${selectedId}`, {
                 method: "DELETE",
                 headers: { Authorization: `Bearer ${token}` }
             });
