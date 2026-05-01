@@ -1,42 +1,64 @@
 const express = require("express");
 const Booking = require("../models/Bookings");
+const Message = require("../models/Messages");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
 const app = express();
 
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcryptjs");
-
-const Message = require("../models/Messages");
-
+/* -----------------------------
+   ADMIN CONFIG
+----------------------------- */
 const ADMIN = {
   username: process.env.ADMIN_USERNAME || "admin",
-  password: process.env.ADMIN_PASSWORD 
+  password: process.env.ADMIN_PASSWORD || "testpassword"
 };
 
+/* -----------------------------
+   CORS CONFIG
+----------------------------- */
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://island-escape-sy8e.onrender.com"
+];
+
 app.use(cors({
-  origin: "http://localhost:3000"
+  origin: function (origin, callback) {
+    // allow Postman / mobile apps / server requests
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
+  methods: ["GET", "POST", "DELETE"],
+  credentials: true
 }));
 
 app.use(express.json());
 
-// Connect DB
+/* -----------------------------
+   DB CONNECTION
+----------------------------- */
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB connected"))
+  .then(() => console.log("MongoDB connected ✅"))
   .catch(err => console.log(err));
 
-//middleware to verify token
-
+/* -----------------------------
+   JWT VERIFY
+----------------------------- */
 function verifyToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
+  const authHeader = req.headers.authorization;
 
   if (!authHeader) {
     return res.status(403).json({ message: "No token provided" });
   }
 
-  const token = authHeader.split(" ")[1]; // remove "Bearer"
+  const token = authHeader.split(" ")[1];
 
   try {
     jwt.verify(token, process.env.JWT_SECRET);
@@ -46,21 +68,16 @@ function verifyToken(req, res, next) {
   }
 }
 
-// POST REQUESTS
+/* -----------------------------
+   ROUTES
+----------------------------- */
 
-// Route
-app.post("/contact", async (req, res) => {
-  try {
-    const newMessage = new Message(req.body);
-    await newMessage.save();
-
-    res.json({ message: "Message sent successfully" });
-  } catch (err) {
-    res.status(500).json({ message: "Error sending message" });
-  }
+// Health check
+app.get("/", (req, res) => {
+  res.json({ message: "Backend running ✅" });
 });
 
-//admin
+/* LOGIN */
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -68,9 +85,7 @@ app.post("/login", async (req, res) => {
     return res.status(401).json({ message: "Invalid username" });
   }
 
-  const isMatch = password === ADMIN.password;
-
-  if (!isMatch) {
+  if (password !== ADMIN.password) {
     return res.status(401).json({ message: "Invalid password" });
   }
 
@@ -83,36 +98,44 @@ app.post("/login", async (req, res) => {
   res.json({ token });
 });
 
-// Booking
+/* CONTACT */
+app.post("/contact", async (req, res) => {
+  try {
+    const newMessage = new Message(req.body);
+    await newMessage.save();
+
+    res.json({ message: "Message sent successfully" });
+  } catch (err) {
+    res.status(500).json({ message: "Error sending message" });
+  }
+});
+
+/* BOOKING */
 app.post("/book", async (req, res) => {
   try {
     const newBooking = new Booking(req.body);
     await newBooking.save();
 
-    console.log("Booking saved:", newBooking);
-
     res.json({ message: "Booking made successfully" });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ message: "Error saving booking" });
   }
 });
 
-// GET REQUESTS
+/* ADMIN PROTECTED ROUTES */
 
-// Get all bookings
+// Get bookings
 app.get("/bookings", verifyToken, async (req, res) => {
-  const bookings = await Booking.find();
+  const bookings = await Booking.find().sort({ _id: -1 });
   res.json(bookings);
 });
 
-// Get all messages
+// Get messages
 app.get("/messages", verifyToken, async (req, res) => {
-  const messages = await Message.find();
+  const messages = await Message.find().sort({ _id: -1 });
   res.json(messages);
 });
 
-// Delete all bookings
 // Delete booking
 app.delete("/bookings/:id", verifyToken, async (req, res) => {
   await Booking.findByIdAndDelete(req.params.id);
@@ -125,7 +148,9 @@ app.delete("/messages/:id", verifyToken, async (req, res) => {
   res.json({ message: "Message deleted" });
 });
 
-// Start server
+/* -----------------------------
+   START SERVER
+----------------------------- */
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
