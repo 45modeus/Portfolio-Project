@@ -37,7 +37,7 @@ function AdminLogin({ onLogin }) {
             setError("Server error. Please try again.");
         }
 
-        setLoading(false);
+        setLoading(true);
     };
 
     return (
