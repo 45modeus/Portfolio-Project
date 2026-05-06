@@ -21,17 +21,19 @@
   opacity: 0.8;
 }
 
+.nav-links span,
 .nav-links a {
   margin-left: 20px;
   font-weight: 500;
   color: #333;
+  cursor: pointer;
 }
 
+.nav-links span:hover,
 .nav-links a:hover {
   color: #0a66c2;
 }
 
-/* Default hidden */
 .hamburger {
   display: none;
   font-size: 24px;
@@ -76,10 +78,11 @@
     display: flex;
   }
 
-  .nav-links a {
-    margin: 0;              
-    width: 100%;            
-    text-align: center;    
+  .nav-links span,
+.nav-links a {
+  margin: 0;
+  width: 100%;
+  text-align: center;
   }
 }
 
