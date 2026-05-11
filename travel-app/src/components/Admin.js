@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import "../styles/Admin.css";
 
 function Admin() {
-    const token = sessionStorage.getItem("token");
     const navigate = useNavigate();
+
     const [menuOpen, setMenuOpen] = useState(false);
+
     const [showModal, setShowModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
     const [type, setType] = useState("");
@@ -18,140 +19,173 @@ function Admin() {
 
     const [search, setSearch] = useState("");
 
-    useEffect(() => {
-        const isLoggedIn = sessionStorage.getItem("isLoggedIn");
+    // Get token from session storage
+    const token = sessionStorage.getItem("token");
 
-        if (!isLoggedIn) {
-            navigate("/admin-login");
-            return;
-        }
-
-        setTimeout(() => {
-            sessionStorage.removeItem("isLoggedIn");
-        }, 100);
-
-    }, [navigate]);
-
-    // Redirect if no token
+    // Redirect if not logged in
     useEffect(() => {
         if (!token) {
             navigate("/admin-login");
         }
     }, [token, navigate]);
 
-    // Fetch data securely
+    // Fetch dashboard data
     useEffect(() => {
         if (!token) return;
 
-        // BOOKINGS
-        fetch("https://island-escape.onrender.com/bookings", {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(res => {
-                if (res.status === 401 || res.status === 403) {
-                    sessionStorage.removeItem("token");
-                    navigate("/admin-login");
-                    return;
-                }
-                return res.json();
-            })
-            .then(data => {
-                if (!data) return;
-                setBookings(data);
-                setAllBookings(data);
-            });
+        const fetchData = async () => {
+            try {
+                // BOOKINGS
+                const bookingsRes = await fetch(
+                    "https://island-escape.onrender.com/bookings",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
 
-        // MESSAGES
-        fetch("https://island-escape.onrender.com/messages", {
-            headers: { Authorization: `Bearer ${token}` }
-        })
-            .then(res => {
-                if (res.status === 401 || res.status === 403) {
+                if (
+                    bookingsRes.status === 401 ||
+                    bookingsRes.status === 403
+                ) {
                     sessionStorage.removeItem("token");
                     navigate("/admin-login");
                     return;
                 }
-                return res.json();
-            })
-            .then(data => {
-                if (!data) return;
-                setMessages(data);
-                setAllMessages(data);
-            });
+
+                const bookingsData = await bookingsRes.json();
+
+                setBookings(bookingsData);
+                setAllBookings(bookingsData);
+
+                // MESSAGES
+                const messagesRes = await fetch(
+                    "https://island-escape.onrender.com/messages",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (
+                    messagesRes.status === 401 ||
+                    messagesRes.status === 403
+                ) {
+                    sessionStorage.removeItem("token");
+                    navigate("/admin-login");
+                    return;
+                }
+
+                const messagesData = await messagesRes.json();
+
+                setMessages(messagesData);
+                setAllMessages(messagesData);
+
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchData();
 
     }, [token, navigate]);
 
-    // DELETE logic
+    // DELETE
     const confirmDelete = async () => {
         if (!token) return;
 
-        if (type === "booking") {
-            const res = await fetch(`https://island-escape.onrender.com/bookings/${selectedId}`, {
-                method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` }
-            });
+        try {
+            if (type === "booking") {
 
-            if (res.status === 401 || res.status === 403) {
-                sessionStorage.removeItem("token");
-                navigate("/admin-login");
-                return;
+                const res = await fetch(
+                    `https://island-escape.onrender.com/bookings/${selectedId}`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+
+                if (res.status === 401 || res.status === 403) {
+                    sessionStorage.removeItem("token");
+                    navigate("/admin-login");
+                    return;
+                }
+
+                const updated = allBookings.filter(
+                    (b) => b._id !== selectedId
+                );
+
+                setAllBookings(updated);
+
+                setBookings(
+                    updated.filter((b) =>
+                        b.name.toLowerCase().includes(search.toLowerCase())
+                    )
+                );
             }
 
-            const updated = allBookings.filter(b => b._id !== selectedId);
-            setAllBookings(updated);
+            if (type === "message") {
 
-            setBookings(
-                updated.filter(b =>
-                    b.name.toLowerCase().includes(search.toLowerCase())
-                )
-            );
-        }
+                const res = await fetch(
+                    `https://island-escape.onrender.com/messages/${selectedId}`,
+                    {
+                        method: "DELETE",
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
 
-        if (type === "message") {
-            const res = await fetch(`https://island-escape.onrender.com/messages/${selectedId}`, {
-                method: "DELETE",
-                headers: { Authorization: `Bearer ${token}` }
-            });
+                if (res.status === 401 || res.status === 403) {
+                    sessionStorage.removeItem("token");
+                    navigate("/admin-login");
+                    return;
+                }
 
-            if (res.status === 401 || res.status === 403) {
-                sessionStorage.removeItem("token");
-                navigate("/admin-login");
-                return;
+                const updated = allMessages.filter(
+                    (m) => m._id !== selectedId
+                );
+
+                setAllMessages(updated);
+
+                setMessages(
+                    updated.filter((m) =>
+                        m.name.toLowerCase().includes(search.toLowerCase())
+                    )
+                );
             }
 
-            const updated = allMessages.filter(m => m._id !== selectedId);
-            setAllMessages(updated);
+            setShowModal(false);
 
-            setMessages(
-                updated.filter(m =>
-                    m.name.toLowerCase().includes(search.toLowerCase())
-                )
-            );
+        } catch (err) {
+            console.error(err);
         }
-
-        setShowModal(false);
     };
 
-    // Logout
+    // LOGOUT
     const logout = () => {
-        sessionStorage.removeItem("token");
+        sessionStorage.clear();
         navigate("/admin-login");
     };
 
-    // Search
+    // SEARCH
     const handleSearch = (value) => {
         setSearch(value);
 
         const lower = value.toLowerCase();
 
         setBookings(
-            allBookings.filter(b =>
+            allBookings.filter((b) =>
                 b.name.toLowerCase().includes(lower)
             )
         );
 
         setMessages(
-            allMessages.filter(m =>
+            allMessages.filter((m) =>
                 m.name.toLowerCase().includes(lower)
             )
         );
@@ -160,7 +194,7 @@ function Admin() {
     return (
         <div className="admin-layout">
 
-            {/* HAMBURGER (MUST BE INSIDE LAYOUT) */}
+            {/* MOBILE HAMBURGER */}
             <div
                 className="admin-hamburger"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -168,23 +202,36 @@ function Admin() {
                 ☰
             </div>
 
+            {/* SIDEBAR */}
             <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
 
                 <h2>Admin</h2>
 
                 <nav className="admin-nav">
                     <ul>
-                        <li onClick={() => setMenuOpen(false)}>Dashboard</li>
-                        <li onClick={() => setMenuOpen(false)}>Bookings</li>
-                        <li onClick={() => setMenuOpen(false)}>Messages</li>
+                        <li onClick={() => setMenuOpen(false)}>
+                            Dashboard
+                        </li>
+
+                        <li onClick={() => setMenuOpen(false)}>
+                            Bookings
+                        </li>
+
+                        <li onClick={() => setMenuOpen(false)}>
+                            Messages
+                        </li>
                     </ul>
                 </nav>
 
-                <button className="logout-btn" onClick={logout}>
+                <button
+                    className="logout-btn"
+                    onClick={logout}
+                >
                     Logout
                 </button>
             </aside>
 
+            {/* MOBILE OVERLAY */}
             {menuOpen && (
                 <div
                     className="admin-overlay"
@@ -192,6 +239,7 @@ function Admin() {
                 />
             )}
 
+            {/* MAIN CONTENT */}
             <main className="admin-content">
 
                 <h2>Dashboard</h2>
@@ -199,55 +247,83 @@ function Admin() {
                 <input
                     placeholder="Search bookings & messages..."
                     value={search}
-                    onChange={(e) => handleSearch(e.target.value)}
+                    onChange={(e) =>
+                        handleSearch(e.target.value)
+                    }
                 />
 
+                {/* BOOKINGS */}
                 <h3>Bookings</h3>
+
                 {bookings.map((b) => (
                     <div key={b._id} className="admin-card">
-                        <p>{b.name} - {b.service}</p>
-                        <button onClick={() => {
-                            setSelectedId(b._id);
-                            setType("booking");
-                            setShowModal(true);
-                        }}>
+
+                        <div>
+                            <p><strong>{b.name}</strong></p>
+                            <p>{b.service}</p>
+                            <p>{b.date}</p>
+                        </div>
+
+                        <button
+                            onClick={() => {
+                                setSelectedId(b._id);
+                                setType("booking");
+                                setShowModal(true);
+                            }}
+                        >
                             Delete
                         </button>
+
                     </div>
                 ))}
 
+                {/* MESSAGES */}
                 <h3>Messages</h3>
+
                 {messages.map((m) => (
                     <div key={m._id} className="admin-card">
+
                         <div>
                             <p><strong>{m.name}</strong></p>
                             <p>{m.email}</p>
                             <p>{m.message}</p>
                         </div>
-                        <button onClick={() => {
-                            setSelectedId(m._id);
-                            setType("message");
-                            setShowModal(true);
-                        }}>
+
+                        <button
+                            onClick={() => {
+                                setSelectedId(m._id);
+                                setType("message");
+                                setShowModal(true);
+                            }}
+                        >
                             Delete
                         </button>
+
                     </div>
                 ))}
 
             </main>
 
+            {/* STATS */}
             <div className="stats">
                 <div>Total Bookings: {bookings.length}</div>
                 <div>Total Messages: {messages.length}</div>
             </div>
 
+            {/* DELETE MODAL */}
             {showModal && (
                 <div className="modal-overlay">
+
                     <div className="modal">
+
                         <h3>Confirm Delete</h3>
-                        <p>Are you sure you want to delete this {type}?</p>
+
+                        <p>
+                            Are you sure you want to delete this {type}?
+                        </p>
 
                         <div className="modal-actions">
+
                             <button
                                 onClick={() => setShowModal(false)}
                                 className="cancel-btn"
@@ -261,10 +337,14 @@ function Admin() {
                             >
                                 Yes, Delete
                             </button>
+
                         </div>
+
                     </div>
+
                 </div>
             )}
+
         </div>
     );
 }
